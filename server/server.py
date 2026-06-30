@@ -7,51 +7,31 @@ from game import Game
 
 CLIENT_FOLDER = Path(__file__).parent.parent / "client"
 
-
-connected_players = []
-
 game = Game()
 
 async def websocket_handler(websocket):
-
     print("Client connected")
 
     try:
-
         async for message in websocket:
-
             data = json.loads(message)
-
-            print(data)
+            print("Received:", data)
 
             if data["type"] == "join":
-
                 await game.add_player(websocket)
 
-                print(f"Players: {len(connected_players)}")
+            elif data["type"] == "progress":
+                pass
 
-                if len(connected_players) == 1:
-
-                    await websocket.send(json.dumps({
-                        "type": "status",
-                        "message": "Waiting for another player..."
-                    }))
-
-                elif len(connected_players) == 2:
-
-                    start_message = json.dumps({
-                        "type": "status",
-                        "message": "2 Players Connected"
-                    })
-
-                    for player in connected_players:
-                        await player.send(start_message)
+            elif data["type"] == "finished":
+                print(data)
 
     except websockets.ConnectionClosed:
-        print("Disconnected")
+        print("Client disconnected")
 
     finally:
         await game.remove_player(websocket)
+        print("Player removed")
 
 async def start_websocket():
     server = await websockets.serve(

@@ -1,6 +1,7 @@
 import json
 import random
 from words import generate_words
+import asyncio
 
 class Game:
 
@@ -29,17 +30,29 @@ class Game:
         if websocket in self.players:
             self.players.remove(websocket)
 
+        for player in self.players:
+
+            await player.send(json.dumps({
+                "type": "status",
+                "message": "Opponent disconnected."
+            }))
+
     async def start_game(self):
+        for i in [3, 2, 1]:
 
+            message = json.dumps({
+                "type": "countdown",
+                "value": i
+            })
+
+            for player in self.players:
+                await player.send(message)
+
+            await asyncio.sleep(1)
         text = generate_words()
-
         message = json.dumps({
-
             "type": "start",
-
             "text": text
-
-    })
-
+        })
         for player in self.players:
             await player.send(message)
