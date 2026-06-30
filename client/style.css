@@ -1,0 +1,15 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 60px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+}
+
+#status {
+    font-size: 22px;
+    margin-top: 20px;
+}
